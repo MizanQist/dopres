@@ -1,6 +1,10 @@
+/** Hero media: content-hashed filenames under /public/media so they can be cached immutably (see next.config.ts). */
+export const HERO_POSTER = "/media/hero-poster.5716dd58.jpg";
+export const HERO_MP4 = "/media/hero-scrub.680a9257.mp4";
+export const HERO_WEBM = "/media/hero-scrub.61155c04.webm";
+
 export const site = {
   name: "DOPRES",
-  url: "https://dopres.com", // used for absolute Open Graph image URLs
   tagline: "Developing landmarks. Defining skylines.",
   description:
     "DOPRES is a premium real-estate development company delivering residential, commercial and hospitality landmarks with restraint and precision.",
@@ -8,10 +12,10 @@ export const site = {
   phone: "+234 000 000 0000",
   address: ["12 Landmark Avenue", "Maitama, Abuja", "Nigeria"],
   nav: [
-    { label: "About", href: "#about" },
-    { label: "Projects", href: "#projects" },
-    { label: "Services", href: "#services" },
-    { label: "Contact", href: "#contact" },
+    { label: "About", href: "/#about" },
+    { label: "Projects", href: "/#projects" },
+    { label: "Services", href: "/#services" },
+    { label: "Contact", href: "/#contact" },
   ],
   social: [
     { label: "Instagram", href: "https://instagram.com" },

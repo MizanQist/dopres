@@ -5,7 +5,7 @@ import { gsap, SplitText, reducedMotion } from "@/lib/gsap";
 
 type Props = {
   children: ReactNode;
-  as?: "div" | "p" | "h2" | "h3" | "li" | "span";
+  as?: "div" | "p" | "h1" | "h2" | "h3" | "li" | "span";
   className?: string;
   /** Split into lines and reveal each line through a mask. */
   lines?: boolean;

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { site } from "@/data/site";
 
 const ICONS: Record<string, string> = {
@@ -17,22 +18,25 @@ export default function Footer() {
           <p className="mt-6 max-w-sm text-bone/60">{site.tagline}</p>
         </div>
         <div className="md:col-span-3">
-          <p className="label mb-6">Navigate</p>
-          <ul className="flex flex-col gap-3">
+          <p className="label mb-4">Navigate</p>
+          <ul className="flex flex-col">
             {site.nav.map((l) => (
               <li key={l.href}>
-                <a href={l.href} className="link text-bone/80 transition-colors duration-500 hover:text-bone">{l.label}</a>
+                <a href={l.href} className="tap link text-bone/80 transition-colors duration-500 hover:text-bone">{l.label}</a>
               </li>
             ))}
+            <li>
+              <Link href="/projects" className="tap link text-bone/80 transition-colors duration-500 hover:text-bone">All projects</Link>
+            </li>
           </ul>
         </div>
         <div className="md:col-span-4">
           <p className="label mb-6">Office</p>
           <address className="not-italic leading-relaxed text-bone/60">
             {site.address.map((line) => <p key={line}>{line}</p>)}
-            <a href={`mailto:${site.email}`} className="link mt-4 inline-block text-bone/80">{site.email}</a>
+            <a href={`mailto:${site.email}`} className="tap link mt-2 text-bone/80">{site.email}</a>
           </address>
-          <ul className="mt-8 flex gap-5">
+          <ul className="mt-6 -ml-3 flex">
             {site.social.map((s) => (
               <li key={s.label}>
                 <a
@@ -40,7 +44,7 @@ export default function Footer() {
                   target="_blank"
                   rel="noreferrer"
                   aria-label={s.label}
-                  className="block text-bone/50 transition-colors duration-500 hover:text-bronze"
+                  className="flex h-11 w-11 items-center justify-center text-bone/50 transition-colors duration-500 hover:text-bronze"
                 >
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
                     <path d={ICONS[s.label]} />
@@ -51,9 +55,9 @@ export default function Footer() {
           </ul>
         </div>
       </div>
-      <div className="mt-20 flex flex-wrap items-center justify-between gap-4 border-t border-bone/10 pt-8">
+      <div className="mt-16 flex flex-wrap items-center justify-between gap-4 border-t border-bone/10 pt-6">
         <p className="label">© {new Date().getFullYear()} {site.name}. All rights reserved.</p>
-        <a href="#top" className="label link">Back to top</a>
+        <a href="#top" className="ui tap link px-2 text-bone/70 hover:text-bone">Back to top</a>
       </div>
     </footer>
   );

@@ -27,6 +27,17 @@ body {
   color: var(--color-ink);
 }
 
+/* One focus ring for everything focusable. The base outline-color stops
+   `transition-colors` elements from fading the ring in. */
+:where(a, button, input, textarea, select, [tabindex]) {
+  outline-color: var(--color-bone);
+}
+:focus-visible {
+  outline: 2px solid var(--color-bone);
+  outline-offset: 4px;
+  border-radius: 2px;
+}
+
 /* Lenis */
 html.lenis,
 html.lenis body {
@@ -47,27 +58,70 @@ html.lenis body {
   }
 }
 
-/* Small uppercase label */
+@layer components {
+/* ── Type: 11px eyebrows (non-interactive), 13px UI labels (interactive) ── */
 .label {
   font-family: var(--font-sans);
   font-size: 11px;
   line-height: 1.4;
-  letter-spacing: 0.28em;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
   color: color-mix(in oklab, var(--color-bone) 60%, transparent);
+}
+.ui {
+  font-family: var(--font-sans);
+  font-size: 13px;
+  line-height: 1.2;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+/* 44px minimum hit area for inline links */
+.tap {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* The one primary button */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  min-height: 48px;
+  padding: 0 2rem;
+  border: 1px solid color-mix(in oklab, var(--color-bone) 35%, transparent);
+  color: var(--color-bone);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  transition:
+    border-color 0.7s var(--ease-out-slow),
+    background-color 0.7s var(--ease-out-slow),
+    color 0.7s var(--ease-out-slow);
+}
+.btn:hover,
+.btn:focus-visible {
+  border-color: var(--color-bronze);
+  background: var(--color-bronze);
+  color: var(--color-ink);
+}
+.btn:disabled {
+  opacity: 0.5;
 }
 
 /* Underline that draws in from the left */
 .link {
   position: relative;
-  display: inline-block;
-  padding-bottom: 0.35em;
 }
 .link::after {
   content: "";
   position: absolute;
   left: 0;
-  bottom: 0;
+  bottom: 0.35em;
   height: 1px;
   width: 100%;
   background: currentColor;
@@ -79,6 +133,7 @@ html.lenis body {
 .link:focus-visible::after {
   transform: scaleX(1);
   transform-origin: left;
+}
 }
 
 /* Hero scroll cue */
@@ -101,15 +156,26 @@ html.lenis body {
   padding: 0.9rem 0;
   font-size: 1rem;
   color: var(--color-bone);
-  outline: none;
   transition: border-color 0.6s var(--ease-out-slow);
   border-radius: 0;
 }
 .field:focus {
   border-color: var(--color-bronze);
 }
+.field[aria-invalid="true"] {
+  border-color: var(--color-bronze);
+}
 .field::placeholder {
   color: color-mix(in oklab, var(--color-bone) 30%, transparent);
+}
+
+/* Honeypot: off-screen, never display:none (bots skip hidden inputs) */
+.hp {
+  position: absolute;
+  left: -10000px;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
 }
 
 @media (prefers-reduced-motion: reduce) {

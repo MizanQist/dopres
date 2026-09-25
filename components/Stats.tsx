@@ -36,15 +36,15 @@ export default function Stats() {
   }, []);
 
   return (
-    <section ref={root} className="border-y border-bone/10 px-6 py-20 md:px-10 md:py-24">
-      <dl className="grid grid-cols-2 gap-x-6 gap-y-14 md:grid-cols-4">
+    <section ref={root} aria-label="Key figures" className="px-6 pb-32 md:px-10 md:pb-48">
+      <dl className="grid grid-cols-2 gap-x-6 gap-y-16 md:grid-cols-4 md:gap-x-10">
         {STATS.map((s) => (
-          <div key={s.label} data-stat>
-            <dd className="font-serif text-6xl font-light leading-none md:text-7xl">
+          <div key={s.label} data-stat className="border-t border-bronze/60 pt-8">
+            <dd className="font-serif text-7xl font-light leading-none md:text-8xl lg:text-9xl">
               <span data-count={s.value}>{s.value.toLocaleString("en")}</span>
-              <span className="text-bronze">{s.suffix}</span>
+              {s.suffix}
             </dd>
-            <dt className="label mt-5">{s.label}</dt>
+            <dt className="label mt-6">{s.label}</dt>
           </div>
         ))}
       </dl>

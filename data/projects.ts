@@ -1,53 +1,43 @@
+export type ProjectImage = { src: string; width: number; height: number; alt: string };
+
 export type Project = {
   slug: string;
   name: string;
+  type: string;
   location: string;
   status: "Completed" | "Under construction" | "In planning" | "Sold out";
   year: string;
-  image: string; // path under /public
-  alt: string;
+  /** Shown in the home-page rail. */
+  featured?: boolean;
+  summary: string;
+  scope: string;
+  size: string;
+  timeline: string;
+  role: string;
+  /** First image is the card image. Files live under /public/projects/<slug>/. */
+  images: ProjectImage[];
 };
 
 /**
- * Placeholder projects. Replace names, locations, statuses and images here;
- * the gallery renders whatever is in this array, in order.
- * Images live in /public/projects and should be landscape (16:10 works best).
+ * PLACEHOLDER DATA — names, locations, statuses, sizes, timelines and copy are
+ * invented and await the client. Images are the client's renders, regenerated
+ * from ~/Desktop/Clients/Dopres by tools/prepare-images.py.
+ * The rail shows `featured` projects in this order; /projects lists all of them.
  */
 export const projects: Project[] = [
-  {
-    slug: "aviary-terminal",
-    name: "Aviary Private Terminal",
-    location: "Abuja",
-    status: "Under construction",
-    year: "2026",
-    image: "/projects/01.jpg",
-    alt: "Private jets in front of a folded-facade hangar at dusk",
-  },
-  {
-    slug: "aerodrome-campus",
-    name: "Aerodrome Campus",
-    location: "Lagos",
-    status: "In planning",
-    year: "2027",
-    image: "/projects/02.jpg",
-    alt: "Aerial view of a hangar campus in morning fog",
-  },
-  {
-    slug: "meridian-pavilion",
-    name: "Meridian Pavilion",
-    location: "Abuja",
-    status: "Completed",
-    year: "2024",
-    image: "/projects/03.jpg",
-    alt: "Perforated white facade with palm trees and a glazed entrance",
-  },
-  {
-    slug: "the-lattice",
-    name: "The Lattice",
-    location: "Kano",
-    status: "Sold out",
-    year: "2023",
-    image: "/projects/04.jpg",
-    alt: "Angular facade with a diamond lattice pattern",
-  },
+  { slug: "aviary-private-terminal", name: "Aviary Private Terminal", type: "Private aviation terminal", location: "Abuja", status: "Under construction", year: "2026", featured: true, summary: "A private terminal and hangar for business aviation, wrapped in a folded, perforated skin that reads as a single gesture from the apron and the air.", scope: "Development, design and build", size: "9,800 m\u00b2 hangar and lounge", timeline: "2024 \u2013 2026", role: "Developer and design-build contractor", images: [{ src: "/projects/aviary-private-terminal/1.jpg", width: 1149, height: 643, alt: "Private jets in front of a folded-facade hangar at dusk" }, { src: "/projects/aviary-private-terminal/2.jpg", width: 1164, height: 662, alt: "Aerial view of the hangar campus in morning fog" }, { src: "/projects/aviary-private-terminal/3.jpg", width: 1148, height: 644, alt: "Perforated white facade with palm trees and a glazed entrance" }, { src: "/projects/aviary-private-terminal/4.jpg", width: 1169, height: 647, alt: "Angular facade with a diamond lattice pattern" }] },
+  { slug: "wave-house", name: "Wave House", type: "Private residence", location: "Lagos", status: "In planning", year: "2027", featured: true, summary: "A sculptural family home of stacked curved terraces, a rooftop pool and continuous ribbon balconies that soften a compact coastal plot.", scope: "Design and build", size: "1,650 m\u00b2 over three floors", timeline: "2026 \u2013 2027", role: "Developer and design-build contractor", images: [{ src: "/projects/wave-house/1.jpg", width: 1100, height: 752, alt: "Aerial view of a curved white villa with a rooftop pool" }, { src: "/projects/wave-house/2.jpg", width: 1170, height: 757, alt: "Curved white villa at dusk with a sports car in the drive" }, { src: "/projects/wave-house/3.jpg", width: 1170, height: 748, alt: "Villa entrance under a sweeping cantilevered terrace" }, { src: "/projects/wave-house/4.jpg", width: 1170, height: 762, alt: "Street elevation of the villa with layered curved balconies" }] },
+  { slug: "timber-crescent", name: "Timber Crescent", type: "Mixed-use offices", location: "Lagos", status: "Under construction", year: "2026", featured: true, summary: "Offices and ground-floor retail behind a screen of vertical timber fins, crowned by a planted roof terrace that curves with the corner site.", scope: "Development and asset management", size: "6,400 m\u00b2 GFA", timeline: "2024 \u2013 2026", role: "Developer and long-term asset manager", images: [{ src: "/projects/timber-crescent/1.jpg", width: 1170, height: 1444, alt: "Corner view of a curved office building clad in vertical timber fins" }, { src: "/projects/timber-crescent/2.jpg", width: 1170, height: 1444, alt: "Front elevation of the timber-clad building across a landscaped forecourt" }, { src: "/projects/timber-crescent/3.jpg", width: 1170, height: 1450, alt: "Aerial view showing the planted roof terrace and car park" }] },
+  { slug: "arcade-residence", name: "Arcade Residence", type: "Private estate", location: "Kano", status: "Under construction", year: "2026", featured: true, summary: "A courtyard estate of pointed arches and deep loggias, lit softly at night so the colonnades read as a lantern from the garden.", scope: "Design and build", size: "3,900 m\u00b2 across a main house and guest wing", timeline: "2025 \u2013 2026", role: "Design-build contractor", images: [{ src: "/projects/arcade-residence/1.jpg", width: 1170, height: 625, alt: "Symmetrical white facade with a tall central arch at dusk" }, { src: "/projects/arcade-residence/2.jpg", width: 1170, height: 884, alt: "Main entrance with layered arches lit from within" }, { src: "/projects/arcade-residence/3.jpg", width: 1170, height: 751, alt: "Courtyard elevation with three storeys of arched loggias" }, { src: "/projects/arcade-residence/4.jpg", width: 1170, height: 767, alt: "Garden pavilion with tall arched windows" }] },
+  { slug: "harbour-court", name: "Harbour Court", type: "Apartments", location: "Lagos", status: "Completed", year: "2024", featured: true, summary: "Twelve apartments over four floors, with deep balconies, timber-lined recesses and a gated forecourt on a quiet residential street.", scope: "Development, design and build", size: "2,800 m\u00b2 GFA, 12 apartments", timeline: "2022 \u2013 2024", role: "Developer and design-build contractor", images: [{ src: "/projects/harbour-court/1.jpg", width: 1170, height: 1447, alt: "Four-storey white apartment block with timber accents behind a gated wall" }, { src: "/projects/harbour-court/2.jpg", width: 1170, height: 1455, alt: "Apartment block elevation with balconies and a sports car outside" }, { src: "/projects/harbour-court/3.jpg", width: 1170, height: 1448, alt: "Rear elevation of the apartment block with palm trees" }] },
+  { slug: "veil-pavilion", name: "Veil Pavilion", type: "Showroom", location: "Abuja", status: "Completed", year: "2025", featured: true, summary: "A single-storey showroom behind a patterned perforated veil that filters daylight by day and glows as a signboard by night.", scope: "Design and build", size: "1,200 m\u00b2 showroom and offices", timeline: "2024 \u2013 2025", role: "Design-build contractor", images: [{ src: "/projects/veil-pavilion/1.jpg", width: 1150, height: 920, alt: "Entrance forecourt beneath a perforated metal screen" }, { src: "/projects/veil-pavilion/2.jpg", width: 1170, height: 919, alt: "Street elevation of the pavilion with a patterned facade and a yellow sports car" }] },
+  { slug: "screen-house", name: "Screen House", type: "Private residence", location: "Abuja", status: "Completed", year: "2023", summary: "A two-storey home whose entrance is marked by a full-height lattice screen, with lit reveals that trace the building's edges after dark.", scope: "Design and build", size: "780 m\u00b2 over two floors", timeline: "2022 \u2013 2023", role: "Design-build contractor", images: [{ src: "/projects/screen-house/1.jpg", width: 1159, height: 1539, alt: "Contemporary white villa with a tall lattice screen at dusk" }, { src: "/projects/screen-house/2.jpg", width: 1170, height: 1537, alt: "Front elevation of the villa with a lattice screen and lit soffits" }] },
+  { slug: "twin-court", name: "Twin Court", type: "Semi-detached homes", location: "Abuja", status: "Completed", year: "2024", summary: "A pair of mirrored family homes with cantilevered upper floors, sharing a paved court and a single line of planting.", scope: "Development, design and build", size: "2 \u00d7 540 m\u00b2", timeline: "2023 \u2013 2024", role: "Developer and design-build contractor", images: [{ src: "/projects/twin-court/1.jpg", width: 1170, height: 868, alt: "Corner view of a white two-storey home at dusk" }, { src: "/projects/twin-court/2.jpg", width: 1170, height: 868, alt: "Front elevation of two mirrored semi-detached homes" }] },
+  { slug: "stone-court", name: "Stone Court", type: "Private residence", location: "Abuja", status: "Completed", year: "2023", summary: "A calm two-storey residence in white render and split-face stone, arranged around a covered entrance court.", scope: "Design and build", size: "620 m\u00b2 over two floors", timeline: "2022 \u2013 2023", role: "Design-build contractor", images: [{ src: "/projects/stone-court/1.jpg", width: 893, height: 606, alt: "Two-storey contemporary villa with stone-clad walls and a covered entrance" }] },
+  { slug: "verdant-rise", name: "Verdant Rise", type: "Apartments", location: "Lagos", status: "Under construction", year: "2026", summary: "Six floors of apartments with rounded, planted balconies that step around the corner and give every home an outdoor room.", scope: "Development and investment", size: "7,200 m\u00b2 GFA, 24 apartments", timeline: "2024 \u2013 2026", role: "Developer and investment partner", images: [{ src: "/projects/verdant-rise/1.jpg", width: 1170, height: 926, alt: "Six-storey apartment building with rounded planted balconies at dusk" }, { src: "/projects/verdant-rise/2.jpg", width: 1170, height: 922, alt: "Front elevation of the apartment building with cars in the forecourt" }] },
+  { slug: "fin-house", name: "Fin House", type: "Private residence", location: "Abuja", status: "Completed", year: "2024", summary: "A white villa articulated by vertical fins and a long curved balcony, set behind a low wall and mature planting.", scope: "Design and build", size: "850 m\u00b2 over two floors", timeline: "2023 \u2013 2024", role: "Design-build contractor", images: [{ src: "/projects/fin-house/1.jpg", width: 1170, height: 1155, alt: "White villa with vertical fins and a curved first-floor balcony" }, { src: "/projects/fin-house/2.jpg", width: 1170, height: 1193, alt: "Evening view of the villa with lit facade and cars in the drive" }] },
+  { slug: "crimson-row", name: "Crimson Row", type: "Mixed-use", location: "Port Harcourt", status: "In planning", year: "2027", summary: "A mixed-use block along a busy arterial road, with retail at ground level and offices above behind bands of red and white.", scope: "Development", size: "5,100 m\u00b2 GFA", timeline: "2026 \u2013 2027", role: "Developer", images: [{ src: "/projects/crimson-row/1.jpg", width: 1170, height: 917, alt: "Street view of a mixed-use block with red accent bands" }, { src: "/projects/crimson-row/2.jpg", width: 1170, height: 923, alt: "Aerial view of the mixed-use block beside a tree-lined road" }] }
 ];
+
+export const featuredProjects = projects.filter((p) => p.featured);
+export const findProject = (slug: string) => projects.find((p) => p.slug === slug);

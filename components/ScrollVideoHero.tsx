@@ -2,49 +2,13 @@
 
 import Image from "next/image";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
-import { gsap, ScrollTrigger, reducedMotion } from "@/lib/gsap";
-import { site } from "@/data/site";
+import { gsap, ScrollTrigger, reducedMotion, refreshScroll } from "@/lib/gsap";
+import { HERO_MP4, HERO_POSTER, HERO_WEBM, site } from "@/data/site";
 
-const MP4 = "/hero-scrub.mp4";
-const WEBM = "/hero-scrub.webm";
-const POSTER = "/hero-poster.jpg";
 const LERP = 0.1; // ponytail: per-tick lerp, frame-rate dependent but fine at 60–120Hz
 const HALF_FRAME = 1 / 48; // source is 24fps; ignore seeks smaller than half a frame
 
 type Mode = "loading" | "scrub" | "loop" | "still";
-
-// Fetched once per page load, even across strict-mode remounts.
-let blobPromise: Promise<Blob> | null = null;
-let report: (p: number) => void = () => {};
-
-function loadBlob(url: string) {
-  blobPromise ??= (async () => {
-    const res = await fetch(url);
-    if (!res.ok || !res.body) throw new Error(`video ${res.status}`);
-    const total = Number(res.headers.get("content-length")) || 0;
-    const reader = res.body.getReader();
-    const chunks: BlobPart[] = [];
-    let got = 0;
-    for (;;) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      chunks.push(value as BlobPart);
-      got += value.byteLength;
-      if (total) report(got / total);
-    }
-    return new Blob(chunks, { type: res.headers.get("content-type") ?? "video/mp4" });
-  })().catch((e) => {
-    blobPromise = null; // let a later mount retry instead of caching the failure
-    throw e;
-  });
-  return blobPromise;
-}
-
-/** Resolves after the page's load event so the 15 MB fetch never competes with the poster and fonts. */
-const afterLoad = () =>
-  new Promise<void>((resolve) =>
-    document.readyState === "complete" ? resolve() : window.addEventListener("load", () => resolve(), { once: true }),
-  );
 
 function once(el: HTMLMediaElement, event: string, ms: number) {
   return new Promise<void>((resolve, reject) => {
@@ -59,7 +23,7 @@ function once(el: HTMLMediaElement, event: string, ms: number) {
 async function canSeek(v: HTMLVideoElement) {
   try {
     v.currentTime = 0.2;
-    await once(v, "seeked", 1500);
+    await once(v, "seeked", 4000);
     v.currentTime = 0;
     return true;
   } catch {
@@ -67,63 +31,67 @@ async function canSeek(v: HTMLVideoElement) {
   }
 }
 
+/**
+ * Pinned hero. Copy is visible from first paint over the poster; the video streams in
+ * behind it (browser range requests, no blob buffering) and fades up once it can seek.
+ * Below md and under reduced motion the poster alone is shown.
+ */
 export default function ScrollVideoHero() {
   const wrap = useRef<HTMLElement>(null);
   const stage = useRef<HTMLDivElement>(null);
   const video = useRef<HTMLVideoElement>(null);
-  const title = useRef<HTMLDivElement>(null);
-  const tagline = useRef<HTMLDivElement>(null);
+  const lockup = useRef<HTMLDivElement>(null);
+  const copy = useRef<HTMLDivElement>(null);
+  const outro = useRef<HTMLDivElement>(null);
   const bar = useRef<HTMLSpanElement>(null);
   const [mode, setMode] = useState<Mode>("loading");
 
-  // Pin the stage for the 400vh wrapper and scrub the overlay text.
+  // Pin the stage for the 200svh wrapper; scrub the lockup out and the outro in.
   useLayoutEffect(() => {
     const ctx = gsap.context(() => {
       const trigger = { trigger: wrap.current, start: "top top", end: "bottom bottom" };
       ScrollTrigger.create({ ...trigger, pin: stage.current, pinSpacing: false });
       gsap
         .timeline({ scrollTrigger: { ...trigger, scrub: true } })
-        .to(title.current, { autoAlpha: 0, y: -24, ease: "none", duration: 0.15 }, 0.1)
-        .fromTo(tagline.current, { autoAlpha: 0, y: 32 }, { autoAlpha: 1, y: 0, ease: "none", duration: 0.2 }, 0.62)
-        .to({}, { duration: 0.18 }); // pad timeline to 1 so times above are scroll fractions
+        .to(lockup.current, { autoAlpha: 0, y: -24, ease: "none", duration: 0.2 }, 0.25)
+        .fromTo(outro.current, { autoAlpha: 0, y: 32 }, { autoAlpha: 1, y: 0, ease: "none", duration: 0.2 }, 0.62)
+        .to({}, { duration: 0.18 }); // pad to 1 so the times above are scroll fractions
+      // Entrance on mount: position only, so the copy is legible from first paint.
+      if (!reducedMotion()) {
+        gsap.from(copy.current!.children, { y: 24, duration: 1.4, stagger: 0.08, clearProps: "transform" });
+      }
     }, wrap);
     return () => ctx.revert();
   }, []);
 
-  // Load the whole file, then decide: scrub, loop fallback, or poster only.
+  // Decide the mode, then stream the video straight into the element.
   useEffect(() => {
     const v = video.current!;
-    const url = v.canPlayType('video/mp4; codecs="avc1.640028"') ? MP4 : WEBM;
     let cancelled = false;
-    let objectUrl: string | undefined;
-    report = (p) => { if (bar.current) bar.current.style.transform = `scaleX(${p})`; };
-
+    const onProgress = () => {
+      const b = v.buffered;
+      if (bar.current && b.length && v.duration) bar.current.style.transform = `scaleX(${b.end(b.length - 1) / v.duration})`;
+    };
     (async () => {
-      if (reducedMotion()) { setMode("still"); return; }
-      await afterLoad();
-      if (cancelled) return;
+      if (reducedMotion() || !window.matchMedia("(min-width: 768px)").matches) { setMode("still"); return; }
+      v.addEventListener("progress", onProgress);
       try {
-        const blob = await loadBlob(url);
-        if (cancelled) return;
-        objectUrl = URL.createObjectURL(blob);
-        v.src = objectUrl;
-        await once(v, "loadedmetadata", 10000);
+        v.src = v.canPlayType('video/mp4; codecs="avc1.640028"') ? HERO_MP4 : HERO_WEBM;
+        v.load();
+        await once(v, "loadedmetadata", 15000);
         // Safari (iOS especially) won't paint seeked frames until it has played once.
         await v.play().then(() => v.pause()).catch(() => {});
         const ok = await canSeek(v);
         if (!cancelled) setMode(ok ? "scrub" : "loop");
       } catch {
-        if (cancelled) return;
-        v.src = url; // blob failed: stream normally
-        setMode("loop");
+        if (!cancelled) setMode("loop");
       }
     })();
-
-    return () => {
-      cancelled = true;
-      if (objectUrl) URL.revokeObjectURL(objectUrl);
-    };
+    return () => { cancelled = true; v.removeEventListener("progress", onProgress); };
   }, []);
+
+  // The layout settles when the mode resolves: recompute every ScrollTrigger.
+  useEffect(() => { if (mode !== "loading") refreshScroll(); }, [mode]);
 
   // Scrub: scroll progress → lerped target → currentTime, once per animation frame.
   useEffect(() => {
@@ -150,7 +118,7 @@ export default function ScrollVideoHero() {
     return () => { gsap.ticker.remove(tick); st.kill(); };
   }, [mode]);
 
-  // Fallback: plain muted loop.
+  // Fallback: plain muted loop (only fades up once it is really playing).
   useEffect(() => {
     if (mode !== "loop") return;
     const v = video.current!;
@@ -159,9 +127,9 @@ export default function ScrollVideoHero() {
   }, [mode]);
 
   return (
-    <section id="hero" ref={wrap} className="relative h-[400svh]">
+    <section id="hero" ref={wrap} className="relative h-[200svh]">
       <div ref={stage} className="relative h-svh w-full overflow-hidden">
-        <Image src={POSTER} alt="" fill priority sizes="100vw" className="object-cover object-center" />
+        <Image src={HERO_POSTER} alt="" fill priority sizes="100vw" className="object-cover object-center" />
         {mode !== "still" && (
           <video
             ref={video}
@@ -172,34 +140,48 @@ export default function ScrollVideoHero() {
             className="absolute inset-0 h-full w-full object-cover object-center opacity-0"
           />
         )}
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-[28svh] bg-linear-to-b from-ink/70 to-transparent" />
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[45svh] bg-linear-to-t from-ink via-ink/55 to-transparent" />
 
-        <div ref={title} className="absolute inset-0 flex flex-col items-center justify-center text-center">
-          <p className="label mb-8">Premium real-estate development</p>
-          <h1 className="font-serif text-[clamp(4rem,15vw,13rem)] font-light leading-none tracking-[0.18em] pl-[0.18em]">
-            {site.name}
-          </h1>
-          <div className="absolute bottom-10 flex flex-col items-center gap-5">
-            <span className="label">Scroll to explore</span>
-            <span className="block h-14 w-px overflow-hidden bg-bone/15">
+        {/* Scrims: a base tint, a nav band at the top, and a band for the outro at the bottom. */}
+        <div className="pointer-events-none absolute inset-0 bg-ink/30" />
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-[28svh] bg-linear-to-b from-ink/70 to-transparent" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[50svh] bg-linear-to-t from-ink via-ink/70 to-transparent" />
+
+        {/* Lockup + its own scrim, faded out together at 25–45% of the scroll. */}
+        <div ref={lockup} className="absolute inset-0">
+          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[100svh] bg-[linear-gradient(to_top,#0a0a0a_0%,rgba(10,10,10,0.88)_35%,rgba(10,10,10,0.78)_66%,rgba(10,10,10,0)_100%)]" />
+          <div ref={copy} data-hero="copy" className="absolute inset-x-6 bottom-[12svh] max-w-4xl md:inset-x-10 md:bottom-[14svh]">
+            <p className="label mb-6 text-bone/90">{site.name} · Premium real-estate development</p>
+            <h1 className="font-serif text-[clamp(2.75rem,6.5vw,6rem)] font-light leading-[1.02]">
+              Developing landmarks.
+              <br />
+              Defining skylines.
+            </h1>
+            <p className="mt-6 max-w-xl text-lg leading-relaxed text-bone/90">
+              Residential, commercial and hospitality landmarks, developed with restraint and held for the long term.
+            </p>
+            <div className="mt-10">
+              <a href="#projects" className="btn">View projects</a>
+            </div>
+          </div>
+          <div data-hero="cue" className="absolute bottom-8 right-6 flex items-center gap-4 md:right-10">
+            <span className="label text-bone/90">Scroll</span>
+            <span className="block h-12 w-px overflow-hidden bg-bone/15">
               <span className="cue-line block h-full w-full bg-bronze" />
             </span>
           </div>
         </div>
 
-        <div ref={tagline} className="absolute bottom-12 left-6 max-w-2xl opacity-0 md:bottom-16 md:left-10">
-          <p className="label mb-5 text-bronze">{site.name}</p>
-          <p className="font-serif text-4xl font-light leading-[1.05] md:text-6xl lg:text-7xl">
-            Developing landmarks.
-            <br />
-            Defining skylines.
+        {/* Outro, scrubbed in over the last 40%. */}
+        <div ref={outro} data-hero="outro" className="absolute bottom-12 left-6 max-w-xl opacity-0 md:bottom-16 md:left-10">
+          <p className="label mb-5 text-bone/90">Selected work</p>
+          <p className="font-serif text-3xl font-light leading-[1.1] md:text-5xl">
+            Twelve landmarks across Abuja, Lagos, Kano and Port Harcourt.
           </p>
         </div>
 
         {mode === "loading" && (
-          <div className="absolute bottom-10 right-6 flex items-center gap-4 md:right-10" role="status" aria-live="polite">
-            <span className="label">Loading</span>
+          <div className="absolute right-6 top-24 hidden items-center gap-4 md:flex md:right-10" role="status" aria-live="polite">
+            <span className="label">Loading film</span>
             <span className="block h-px w-20 overflow-hidden bg-bone/15">
               <span ref={bar} className="block h-full w-full origin-left scale-x-0 bg-bronze transition-transform duration-300" />
             </span>

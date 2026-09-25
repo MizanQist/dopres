@@ -5,7 +5,8 @@ import SmoothScroll from "@/components/SmoothScroll";
 import Cursor from "@/components/Cursor";
 import Nav from "@/components/Nav";
 import Footer from "@/components/Footer";
-import { site } from "@/data/site";
+import { site, HERO_POSTER } from "@/data/site";
+import { indexable, siteUrl } from "@/lib/site-url";
 
 const cormorant = Cormorant_Garamond({
   subsets: ["latin"],
@@ -21,14 +22,20 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(site.url),
-  title: `${site.name} — ${site.tagline}`,
+  metadataBase: new URL(siteUrl),
+  title: { default: `${site.name} — ${site.tagline}`, template: `%s — ${site.name}` },
   description: site.description,
+  alternates: { canonical: "/" },
   openGraph: {
-    title: site.name,
+    type: "website",
+    url: "/",
+    siteName: site.name,
+    title: `${site.name} — ${site.tagline}`,
     description: site.description,
-    images: ["/hero-poster.jpg"],
+    images: [{ url: HERO_POSTER, width: 1920, height: 1080, alt: "Aerial view of a DOPRES development" }],
   },
+  twitter: { card: "summary_large_image", title: site.name, description: site.description, images: [HERO_POSTER] },
+  robots: indexable ? { index: true, follow: true } : { index: false, follow: false },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

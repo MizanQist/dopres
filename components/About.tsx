@@ -19,7 +19,7 @@ export default function About() {
             years.
           </Reveal>
           <Reveal delay={0.3} className="mt-12">
-            <a href="#contact" className="link label text-bone">Start a conversation</a>
+            <a href="#contact" className="btn">Start a conversation</a>
           </Reveal>
         </div>
       </div>

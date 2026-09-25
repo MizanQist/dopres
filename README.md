@@ -31,11 +31,15 @@ data/
 lib/
   gsap.ts               plugin registration + defaults
   contact.ts            form validation shared by client and API route
+app/projects/         /projects index and /projects/[slug] detail pages
+app/robots.ts, app/sitemap.ts, app/icon.png, app/apple-icon.png
 public/
-  hero-scrub.mp4 / .webm / hero-poster.jpg   hero assets used by the site
-  hero.mp4              original source (not used at runtime — safe to delete or gitignore)
-  projects/01–04.jpg    gallery images
-source/                 original renders the gallery images were cut from
+  media/hero-scrub.<hash>.mp4 / .webm / hero-poster.<hash>.jpg   hero assets (immutable cache, see next.config.ts)
+  hero.mp4              original source (gitignored; only needed to re-encode)
+  projects/<slug>/N.jpg gallery images, cut from the client's renders by tools/prepare-images.py
+tools/
+  encode-hero.sh        re-encode + hash the hero media and update data/site.ts
+  prepare-images.py     rebuild the project galleries from ~/Desktop/Clients/Dopres
 ```
 
 ## Replacing the hero video
@@ -44,31 +48,32 @@ The hero scrubs `currentTime` from scroll position, so the file must be encoded 
 or seeking stutters. Put your new clip at `public/hero.mp4` (a 10–15 s drone shot works best) and run:
 
 ```bash
-# all-keyframe H.264 (primary)
-ffmpeg -i public/hero.mp4 -an -c:v libx264 -g 1 -keyint_min 1 -pix_fmt yuv420p -profile:v high -crf 20 -movflags +faststart public/hero-scrub.mp4
-
-# all-keyframe VP9 fallback (used only where H.264 can't play)
-ffmpeg -i public/hero.mp4 -an -c:v libvpx-vp9 -g 1 -keyint_min 1 -crf 38 -b:v 0 -pix_fmt yuv420p -row-mt 1 -deadline good -cpu-used 2 public/hero-scrub.webm
-
-# poster from frame 0
-ffmpeg -i public/hero.mp4 -frames:v 1 -update 1 -q:v 2 public/hero-poster.jpg
+tools/encode-hero.sh            # 1280px wide, crf 33 → about 2 MB
+tools/encode-hero.sh 1280 30    # larger / higher quality
 ```
+
+It writes all-keyframe H.264 and VP9 files plus a frame-0 poster into `public/media/` with a content hash in
+each filename, and rewrites the three `HERO_*` constants in `data/site.ts`. The hash is what lets `next.config.ts`
+serve `/media/*` with `Cache-Control: public, max-age=31536000, immutable`. Commit the new files and delete the old ones.
 
 Install ffmpeg with `brew install ffmpeg` (macOS) or from https://ffmpeg.org/download.html.
 
 Notes:
-- All-keyframe files are large. Raise `-crf` (22–26) or scale to 1280×720 (`-vf scale=1280:-2`) to trade quality for size.
-  The current 1080p files are ~16 MB (MP4) and ~18 MB (WebM); the site downloads only one of them.
 - `HALF_FRAME` in `ScrollVideoHero.tsx` assumes 24 fps. Change it to `1 / (fps * 2)` for other frame rates.
-- The hero container is `400svh` tall, so the whole clip plays over three viewport-heights of scrolling.
-  Make it taller for a slower fly-through.
-- Behaviour: the file is fetched once as a blob, scrubbing starts after `loadedmetadata` and a seek probe;
-  if seeking fails (some mobile browsers) the video simply loops; with `prefers-reduced-motion` only the poster shows.
+- The hero container is `200svh` tall, so the clip plays over one viewport-height of scrolling. Make it taller for
+  a slower fly-through.
+- Behaviour: the headline is visible from first paint over the poster; the video streams straight into the
+  `<video>` element (no blob buffering) and fades up once `loadedmetadata` and a seek probe succeed. If seeking
+  fails the video loops; below the `md` breakpoint and under `prefers-reduced-motion` only the poster is shown.
 
 ## Editing projects
 
-Edit `data/projects.ts`. Each entry has `name`, `location`, `status`, `year`, `image` (a path under `public/`)
-and `alt`. Landscape images around 16:10 look best; the gallery renders the array in order and grows to fit.
+Edit `data/projects.ts`. Each project has a `slug` (its URL, `/projects/<slug>`), `name`, `type`, `location`,
+`status`, `year`, `summary`, `scope`, `size`, `timeline`, `role`, an optional `featured` flag (shown in the
+home-page rail) and an `images` array of `{ src, width, height, alt }`. The first image is the card image.
+
+Images live under `public/projects/<slug>/`. They were cut from the client's renders by `tools/prepare-images.py`;
+edit its `SPEC` and re-run it to add or regroup projects, then paste the printed dimensions into `projects.ts`.
 
 Company details (email, phone, address, social links, nav labels) live in `data/site.ts`.
 Services copy is at the top of `components/Services.tsx`; stats figures at the top of `components/Stats.tsx`.
@@ -89,9 +94,22 @@ and keep the `--font-cormorant` / `--font-inter` variable names (or update them 
 
 ## Contact form
 
-`app/api/contact/route.ts` validates the payload with the same `validateContact()` the form uses, then
-`console.log`s it. Replace the log with your email provider or CRM call. There is no rate limiting or spam
-protection yet; add a honeypot field or a Turnstile/hCaptcha check before launch.
+`app/api/contact/route.ts` validates the payload with the same `validateContact()` the form uses, drops
+submissions that fill the hidden honeypot field, and rate-limits each IP to 5 submissions per 10 minutes.
+
+Delivery: with `RESEND_API_KEY` and `CONTACT_TO` set (Vercel → project → Settings → Environment Variables) it
+emails each enquiry through https://resend.com (optionally `CONTACT_FROM` for a verified sender). Without them
+it only logs the submission, visible under the project's Logs tab on Vercel.
+
+## Environment variables
+
+| Variable | Purpose |
+|---|---|
+| `NEXT_PUBLIC_SITE_URL` | The real domain, e.g. `https://dopres.com`. Sets canonical/OG URLs and, on the production deployment, turns indexing on. Until it is set every deployment is `noindex`. |
+| `RESEND_API_KEY`, `CONTACT_TO`, `CONTACT_FROM` | Contact-form delivery (see above). |
+
+`VERCEL_PROJECT_PRODUCTION_URL` and `VERCEL_URL` are set by Vercel automatically and used as fallbacks for the
+site URL, so social previews work on `dopres.vercel.app` before the real domain exists.
 
 ## Deploying to Vercel
 
