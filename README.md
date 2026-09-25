@@ -48,12 +48,15 @@ The hero scrubs `currentTime` from scroll position, so the file must be encoded 
 or seeking stutters. Put your new clip at `public/hero.mp4` (a 10–15 s drone shot works best) and run:
 
 ```bash
-tools/encode-hero.sh            # 1280px wide, crf 33 → about 2 MB
-tools/encode-hero.sh 1280 30    # larger / higher quality
+tools/encode-hero.sh                 # 1600px landscape at crf 28, 9:16 portrait crop for phones, poster
+tools/encode-hero.sh 1920 30 520     # width, crf, and the left edge of the portrait crop (source pixels)
 ```
 
-It writes all-keyframe H.264 and VP9 files plus a frame-0 poster into `public/media/` with a content hash in
-each filename, and rewrites the three `HERO_*` constants in `data/site.ts`. The hash is what lets `next.config.ts`
+It writes all-keyframe H.264 files (landscape for tablets and desktops, a portrait crop for phones), a VP9
+fallback and a frame-0 poster into `public/media/` with a content hash in each filename, and rewrites the four
+`HERO_*` constants in `data/site.ts`. Pick the portrait crop offset by checking a few frames: the phone shows a
+608×1080 window of the 1920×1080 source, so choose the x where the subject stays in frame across the shot, and
+match the poster's mobile `object-position` in `ScrollVideoHero.tsx` (x + 304, as a percentage of 1920). The hash is what lets `next.config.ts`
 serve `/media/*` with `Cache-Control: public, max-age=31536000, immutable`. Commit the new files and delete the old ones.
 
 Install ffmpeg with `brew install ffmpeg` (macOS) or from https://ffmpeg.org/download.html.
@@ -64,7 +67,9 @@ Notes:
   a slower fly-through.
 - Behaviour: the headline is visible from first paint over the poster; the video streams straight into the
   `<video>` element (no blob buffering) and fades up once `loadedmetadata` and a seek probe succeed. If seeking
-  fails the video loops; below the `md` breakpoint and under `prefers-reduced-motion` only the poster is shown.
+  fails the video loops; under `prefers-reduced-motion` only the poster is shown. Phones get the portrait file.
+- The video is deliberately not dimmed. Only a soft band at the top (for the nav) and one at the bottom (for the
+  scroll cue and outro) sit over it, so the headline relies on its text shadow over bright frames.
 
 ## Editing projects
 

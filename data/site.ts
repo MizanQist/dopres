@@ -1,6 +1,7 @@
 /** Hero media: content-hashed filenames under /public/media so they can be cached immutably (see next.config.ts). */
 export const HERO_POSTER = "/media/hero-poster.5716dd58.jpg";
-export const HERO_MP4 = "/media/hero-scrub.680a9257.mp4";
+export const HERO_MP4 = "/media/hero-scrub.1e85caf1.mp4";
+export const HERO_MP4_PORTRAIT = "/media/hero-scrub-portrait.72263651.mp4"; // phones: 9:16 crop of the same shot
 export const HERO_WEBM = "/media/hero-scrub.61155c04.webm";
 
 export const site = {

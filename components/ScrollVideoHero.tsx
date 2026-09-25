@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { gsap, ScrollTrigger, reducedMotion, refreshScroll } from "@/lib/gsap";
-import { HERO_MP4, HERO_POSTER, HERO_WEBM, site } from "@/data/site";
+import { HERO_MP4, HERO_MP4_PORTRAIT, HERO_POSTER, HERO_WEBM, site } from "@/data/site";
 
 const LERP = 0.1; // ponytail: per-tick lerp, frame-rate dependent but fine at 60–120Hz
 const HALF_FRAME = 1 / 48; // source is 24fps; ignore seeks smaller than half a frame
@@ -34,7 +34,7 @@ async function canSeek(v: HTMLVideoElement) {
 /**
  * Pinned hero. Copy is visible from first paint over the poster; the video streams in
  * behind it (browser range requests, no blob buffering) and fades up once it can seek.
- * Below md and under reduced motion the poster alone is shown.
+ * Phones get a portrait crop of the same shot; reduced motion gets the poster alone.
  */
 export default function ScrollVideoHero() {
   const wrap = useRef<HTMLElement>(null);
@@ -73,10 +73,11 @@ export default function ScrollVideoHero() {
       if (bar.current && b.length && v.duration) bar.current.style.transform = `scaleX(${b.end(b.length - 1) / v.duration})`;
     };
     (async () => {
-      if (reducedMotion() || !window.matchMedia("(min-width: 768px)").matches) { setMode("still"); return; }
+      if (reducedMotion()) { setMode("still"); return; }
       v.addEventListener("progress", onProgress);
       try {
-        v.src = v.canPlayType('video/mp4; codecs="avc1.640028"') ? HERO_MP4 : HERO_WEBM;
+        const portrait = window.matchMedia("(max-width: 767px)").matches;
+        v.src = !v.canPlayType('video/mp4; codecs="avc1.640028"') ? HERO_WEBM : portrait ? HERO_MP4_PORTRAIT : HERO_MP4;
         v.load();
         await once(v, "loadedmetadata", 15000);
         // Safari (iOS especially) won't paint seeked frames until it has played once.
@@ -129,7 +130,7 @@ export default function ScrollVideoHero() {
   return (
     <section id="hero" ref={wrap} className="relative h-[200svh]">
       <div ref={stage} className="relative h-svh w-full overflow-hidden">
-        <Image src={HERO_POSTER} alt="" fill priority sizes="100vw" className="object-cover object-center" />
+        <Image src={HERO_POSTER} alt="" fill priority sizes="100vw" className="object-cover object-[43%_50%] md:object-center" />
         {mode !== "still" && (
           <video
             ref={video}
@@ -141,31 +142,26 @@ export default function ScrollVideoHero() {
           />
         )}
 
-        {/* Scrims: a base tint, a nav band at the top, and a band for the outro at the bottom. */}
-        <div className="pointer-events-none absolute inset-0 bg-ink/30" />
+        {/* Soft bands only: one behind the nav, one so the outro and cue stay legible. */}
         <div className="pointer-events-none absolute inset-x-0 top-0 h-[28svh] bg-linear-to-b from-ink/70 to-transparent" />
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[50svh] bg-linear-to-t from-ink via-ink/70 to-transparent" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[45svh] bg-linear-to-t from-ink via-ink/55 to-transparent" />
 
-        {/* Lockup + its own scrim, faded out together at 25–45% of the scroll. */}
+        {/* Centred lockup, faded out at 25–45% of the scroll. */}
         <div ref={lockup} className="absolute inset-0">
-          <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[100svh] bg-[linear-gradient(to_top,#0a0a0a_0%,rgba(10,10,10,0.88)_35%,rgba(10,10,10,0.78)_66%,rgba(10,10,10,0)_100%)]" />
-          <div ref={copy} data-hero="copy" className="absolute inset-x-6 bottom-[12svh] max-w-4xl md:inset-x-10 md:bottom-[14svh]">
-            <p className="label mb-6 text-bone/90">{site.name} · Premium real-estate development</p>
-            <h1 className="font-serif text-[clamp(2.75rem,6.5vw,6rem)] font-light leading-[1.02]">
+          <div ref={copy} data-hero="copy" className="absolute inset-x-6 top-1/2 flex -translate-y-1/2 flex-col items-center text-center md:inset-x-10">
+            <p className="label mb-8 text-bone/90">{site.name} · Premium real-estate development</p>
+            <h1 className="font-serif text-[clamp(2.9rem,8vw,7.5rem)] font-light leading-[1.02] [text-shadow:0_2px_24px_rgba(0,0,0,0.45)]">
               Developing landmarks.
               <br />
               Defining skylines.
             </h1>
-            <p className="mt-6 max-w-xl text-lg leading-relaxed text-bone/90">
-              Residential, commercial and hospitality landmarks, developed with restraint and held for the long term.
-            </p>
             <div className="mt-10">
               <a href="#projects" className="btn">View projects</a>
             </div>
           </div>
-          <div data-hero="cue" className="absolute bottom-8 right-6 flex items-center gap-4 md:right-10">
-            <span className="label text-bone/90">Scroll</span>
-            <span className="block h-12 w-px overflow-hidden bg-bone/15">
+          <div data-hero="cue" className="absolute inset-x-0 bottom-10 flex flex-col items-center gap-5">
+            <span className="label text-bone/90">Scroll to explore</span>
+            <span className="block h-14 w-px overflow-hidden bg-bone/15">
               <span className="cue-line block h-full w-full bg-bronze" />
             </span>
           </div>
