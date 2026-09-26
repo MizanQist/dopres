@@ -109,22 +109,53 @@ export default function ScrollVideoHero() {
     });
     target = current = st.progress;
     const end = v.duration - 0.05;
+    let force = false;
     const tick = () => {
       current += (target - current) * LERP;
       if (Math.abs(target - current) < 0.0005) current = target;
       const t = Math.min(current * v.duration, end);
-      if (!v.seeking && Math.abs(v.currentTime - t) > HALF_FRAME) v.currentTime = t;
+      // No `seeking` gate: a seek that stalled while the tab was hidden would block every later one.
+      // While a seek is pending currentTime already reports the pending position, so this stays throttled.
+      if (force || Math.abs(v.currentTime - t) > HALF_FRAME) {
+        v.currentTime = force && v.currentTime === t ? t + 0.001 : t;
+        force = false;
+      }
     };
+    // Browsers release the decoder of a paused video while the tab or app is in the background.
+    // When we come back, prime it again (and reload it if the media was dropped) so seeks paint.
+    const wake = () => {
+      if (document.visibilityState !== "visible") return;
+      const prime = () => v.play().then(() => v.pause()).catch(() => {}).finally(() => { force = true; });
+      if (v.readyState === 0) { v.load(); once(v, "loadedmetadata", 15000).then(prime).catch(() => {}); }
+      else prime();
+    };
+    document.addEventListener("visibilitychange", wake);
+    window.addEventListener("pageshow", wake);
+    window.addEventListener("focus", wake);
     gsap.ticker.add(tick);
-    return () => { gsap.ticker.remove(tick); st.kill(); };
+    return () => {
+      gsap.ticker.remove(tick);
+      st.kill();
+      document.removeEventListener("visibilitychange", wake);
+      window.removeEventListener("pageshow", wake);
+      window.removeEventListener("focus", wake);
+    };
   }, [mode]);
 
-  // Fallback: plain muted loop (only fades up once it is really playing).
+  // Fallback: plain muted loop (only fades up once it is really playing); resume it after a tab switch.
   useEffect(() => {
     if (mode !== "loop") return;
     const v = video.current!;
     v.loop = true;
-    v.play().then(() => gsap.to(v, { autoAlpha: 1, duration: 1.4 })).catch(() => {});
+    const play = () => v.play().then(() => gsap.to(v, { autoAlpha: 1, duration: 1.4 })).catch(() => {});
+    const wake = () => { if (document.visibilityState === "visible") play(); };
+    play();
+    document.addEventListener("visibilitychange", wake);
+    window.addEventListener("focus", wake);
+    return () => {
+      document.removeEventListener("visibilitychange", wake);
+      window.removeEventListener("focus", wake);
+    };
   }, [mode]);
 
   return (
