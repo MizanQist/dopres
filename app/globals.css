@@ -2,18 +2,18 @@
 
 /* ── Brand tokens: change colours and fonts here ─────────────────────── */
 @theme inline {
-  --color-ink: #0a0a0a;
-  --color-bone: #f2f0eb;
-  --color-bronze: #b08d57;
+  --color-navy: #0a1838;   /* brand blue, from the logo and posts */
+  --color-orange: #e2973f; /* brand orange */
+  --color-paper: #f4f6fa;  /* soft off-white for alternating panels */
   --font-serif: var(--font-cormorant), "Cormorant Garamond", Georgia, serif;
   --font-sans: var(--font-inter), Inter, system-ui, sans-serif;
   --ease-out-slow: cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 html {
-  background: var(--color-ink);
-  color: var(--color-bone);
-  color-scheme: dark;
+  background: #ffffff;
+  color: var(--color-navy);
+  color-scheme: light;
 }
 
 body {
@@ -23,17 +23,17 @@ body {
 }
 
 ::selection {
-  background: var(--color-bronze);
-  color: var(--color-ink);
+  background: var(--color-orange);
+  color: var(--color-navy);
 }
 
 /* One focus ring for everything focusable. The base outline-color stops
    `transition-colors` elements from fading the ring in. */
 :where(a, button, input, textarea, select, [tabindex]) {
-  outline-color: var(--color-bone);
+  outline-color: var(--color-orange);
 }
 :focus-visible {
-  outline: 2px solid var(--color-bone);
+  outline: 2px solid var(--color-orange);
   outline-offset: 4px;
   border-radius: 2px;
 }
@@ -66,7 +66,7 @@ html.lenis body {
   line-height: 1.4;
   letter-spacing: 0.15em;
   text-transform: uppercase;
-  color: color-mix(in oklab, var(--color-bone) 60%, transparent);
+  color: color-mix(in oklab, currentColor 60%, transparent); /* follows the section's text colour */
 }
 .ui {
   font-family: var(--font-sans);
@@ -92,8 +92,8 @@ html.lenis body {
   gap: 0.75rem;
   min-height: 48px;
   padding: 0 2rem;
-  border: 1px solid color-mix(in oklab, var(--color-bone) 35%, transparent);
-  color: var(--color-bone);
+  border: 1px solid color-mix(in oklab, currentColor 40%, transparent);
+  color: currentColor;
   font-family: var(--font-sans);
   font-size: 13px;
   letter-spacing: 0.15em;
@@ -105,9 +105,16 @@ html.lenis body {
 }
 .btn:hover,
 .btn:focus-visible {
-  border-color: var(--color-bronze);
-  background: var(--color-bronze);
-  color: var(--color-ink);
+  border-color: var(--color-orange);
+  background: var(--color-orange);
+  color: var(--color-navy);
+}
+/* On orange panels the button fills navy instead */
+.btn-invert:hover,
+.btn-invert:focus-visible {
+  border-color: var(--color-navy);
+  background: var(--color-navy);
+  color: #ffffff;
 }
 .btn:disabled {
   opacity: 0.5;
@@ -152,21 +159,21 @@ html.lenis body {
   width: 100%;
   background: transparent;
   border: 0;
-  border-bottom: 1px solid color-mix(in oklab, var(--color-bone) 20%, transparent);
+  border-bottom: 1px solid color-mix(in oklab, currentColor 25%, transparent);
   padding: 0.9rem 0;
   font-size: 1rem;
-  color: var(--color-bone);
+  color: currentColor;
   transition: border-color 0.6s var(--ease-out-slow);
   border-radius: 0;
 }
 .field:focus {
-  border-color: var(--color-bronze);
+  border-color: var(--color-orange);
 }
 .field[aria-invalid="true"] {
-  border-color: var(--color-bronze);
+  border-color: var(--color-orange);
 }
 .field::placeholder {
-  color: color-mix(in oklab, var(--color-bone) 30%, transparent);
+  color: color-mix(in oklab, currentColor 35%, transparent);
 }
 
 /* Honeypot: off-screen, never display:none (bots skip hidden inputs) */

@@ -67,7 +67,7 @@ export default function Projects() {
     <section
       id="projects"
       ref={section}
-      className="relative h-svh overflow-hidden bg-ink motion-reduce:h-auto motion-reduce:overflow-x-auto"
+      className="relative h-svh overflow-hidden bg-white text-navy motion-reduce:h-auto motion-reduce:overflow-x-auto"
     >
       <div className="absolute inset-x-0 top-0 z-10 flex items-end justify-between gap-6 px-6 pt-28 md:px-10">
         <div>
@@ -78,8 +78,8 @@ export default function Projects() {
           <p className="label whitespace-nowrap" aria-live="polite">
             <span ref={counter}>01</span> / {String(n).padStart(2, "0")}
           </p>
-          <span className="block h-px w-20 overflow-hidden bg-bone/15 md:w-32" aria-hidden>
-            <span ref={bar} className="block h-full w-full origin-left scale-x-0 bg-bronze" />
+          <span className="block h-px w-20 overflow-hidden bg-navy/15 md:w-32" aria-hidden>
+            <span ref={bar} className="block h-full w-full origin-left scale-x-0 bg-orange" />
           </span>
           <p className="label whitespace-nowrap">Scroll to move through</p>
         </div>

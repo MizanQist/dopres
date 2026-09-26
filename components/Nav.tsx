@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -46,18 +47,18 @@ export default function Nav() {
       <header
         className={`fixed inset-x-0 top-0 z-50 border-b transition-[background-color,border-color,backdrop-filter] duration-700 ease-out-slow ${
           isSolid
-            ? "border-bone/10 bg-ink/70 backdrop-blur-md"
-            : "border-transparent bg-transparent"
+            ? "border-white/10 bg-navy/90 text-white backdrop-blur-md"
+            : "border-transparent bg-transparent text-white"
         }`}
       >
         <nav className="flex h-20 items-center justify-between px-6 md:px-10">
-          <Link href="/" className="tap font-serif text-2xl font-medium tracking-[0.22em]" aria-label={`${site.name} home`}>
-            {site.name}
+          <Link href="/" className="tap" aria-label={`${site.name} home`}>
+            <Image src="/logo-wordmark.png" alt={site.name} width={130} height={34} priority className="h-8 w-auto md:h-9" />
           </Link>
           <ul className="hidden items-center gap-6 md:flex">
             {site.nav.map((l) => (
               <li key={l.href}>
-                <a href={href(l.href)} className="ui tap link px-2 text-bone/70 transition-colors duration-500 hover:text-bone">
+                <a href={href(l.href)} className="ui tap link px-2 text-white/75 transition-colors duration-500 hover:text-white">
                   {l.label}
                 </a>
               </li>
@@ -71,8 +72,8 @@ export default function Nav() {
             aria-label={open ? "Close menu" : "Open menu"}
             className="relative flex h-11 w-11 items-center justify-center md:hidden"
           >
-            <span className={`absolute h-px w-6 bg-bone transition-transform duration-500 ease-out-slow ${open ? "rotate-45" : "-translate-y-1"}`} />
-            <span className={`absolute h-px w-6 bg-bone transition-transform duration-500 ease-out-slow ${open ? "-rotate-45" : "translate-y-1"}`} />
+            <span className={`absolute h-px w-6 bg-white transition-transform duration-500 ease-out-slow ${open ? "rotate-45" : "-translate-y-1"}`} />
+            <span className={`absolute h-px w-6 bg-white transition-transform duration-500 ease-out-slow ${open ? "-rotate-45" : "translate-y-1"}`} />
           </button>
         </nav>
       </header>
@@ -80,7 +81,7 @@ export default function Nav() {
       <div
         id="mobile-menu"
         aria-hidden={!open}
-        className={`fixed inset-0 z-40 flex flex-col justify-between bg-ink px-6 pb-10 pt-32 transition-opacity duration-700 ease-out-slow md:hidden ${
+        className={`fixed inset-0 z-40 flex flex-col justify-between bg-navy px-6 pb-10 pt-32 text-white transition-opacity duration-700 ease-out-slow md:hidden ${
           open ? "opacity-100" : "pointer-events-none opacity-0"
         }`}
       >
@@ -102,7 +103,7 @@ export default function Nav() {
         </ul>
         <div className="flex items-end justify-between">
           <a href={`mailto:${site.email}`} className="ui tap" tabIndex={open ? 0 : -1}>{site.email}</a>
-          <span className="label text-bronze">{site.address[1]}</span>
+          <span className="label text-orange">{site.address[1]}</span>
         </div>
       </div>
     </>

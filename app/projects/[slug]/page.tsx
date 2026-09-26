@@ -47,20 +47,20 @@ export default async function ProjectPage({ params }: Props) {
   return (
     <main id="top">
       <article className="px-6 pt-32 pb-24 md:px-10 md:pt-44 md:pb-32">
-        <Link href="/projects" className="ui tap link px-2 -ml-2 text-bone/70 hover:text-bone">All projects</Link>
+        <Link href="/projects" className="ui tap link px-2 -ml-2 text-navy/70 hover:text-navy">All projects</Link>
 
         <header className="mt-10 grid gap-12 md:grid-cols-12 md:gap-10">
           <div className="md:col-span-7">
             <Reveal as="p" className="label mb-6">{p.type} · {p.location}</Reveal>
             <Reveal as="h1" className="font-serif text-[clamp(2.75rem,6.5vw,6rem)] font-light leading-[1.02]">{p.name}</Reveal>
-            <Reveal as="p" delay={0.1} className="mt-8 max-w-2xl text-lg leading-relaxed text-bone/70">{p.summary}</Reveal>
+            <Reveal as="p" delay={0.1} className="mt-8 max-w-2xl text-lg leading-relaxed text-navy/70">{p.summary}</Reveal>
           </div>
           <Reveal delay={0.2} className="md:col-span-4 md:col-start-9 md:pt-6">
             <dl className="grid grid-cols-2 gap-x-6 gap-y-8">
               {facts.map(([k, v]) => (
-                <div key={k} className="border-t border-bone/10 pt-4">
+                <div key={k} className="border-t border-navy/10 pt-4">
                   <dt className="label">{k}</dt>
-                  <dd className="mt-2 leading-relaxed text-bone/80">{v}</dd>
+                  <dd className="mt-2 leading-relaxed text-navy/80">{v}</dd>
                 </div>
               ))}
             </dl>
@@ -77,17 +77,17 @@ export default async function ProjectPage({ params }: Props) {
                 height={img.height}
                 priority={n === 0}
                 sizes={img.height > img.width ? "(min-width: 768px) 768px, 100vw" : "100vw"}
-                className="h-auto w-full bg-bone/5"
+                className="h-auto w-full bg-navy/5"
               />
             </Reveal>
           ))}
         </div>
 
-        <nav aria-label="More projects" className="mt-20 flex flex-wrap justify-between gap-6 border-t border-bone/10 pt-8">
-          <Link href={`/projects/${prev.slug}`} className="tap link text-bone/70 hover:text-bone">
+        <nav aria-label="More projects" className="mt-20 flex flex-wrap justify-between gap-6 border-t border-navy/10 pt-8">
+          <Link href={`/projects/${prev.slug}`} className="tap link text-navy/70 hover:text-navy">
             <span className="label mr-3">Previous</span>{prev.name}
           </Link>
-          <Link href={`/projects/${next.slug}`} className="tap link text-right text-bone/70 hover:text-bone">
+          <Link href={`/projects/${next.slug}`} className="tap link text-right text-navy/70 hover:text-navy">
             {next.name}<span className="label ml-3">Next</span>
           </Link>
         </nav>

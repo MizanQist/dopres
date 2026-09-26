@@ -41,7 +41,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${cormorant.variable} ${inter.variable}`}>
-      <body className="bg-ink text-bone">
+      <body className="bg-white text-navy">
         <SmoothScroll />
         <Cursor />
         <Nav />

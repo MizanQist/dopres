@@ -9,8 +9,9 @@ export const site = {
   tagline: "Developing landmarks. Defining skylines.",
   description:
     "DOPRES is a premium real-estate development company delivering residential, commercial and hospitality landmarks with restraint and precision.",
-  email: "hello@dopres.com",
-  phone: "+234 000 000 0000",
+  email: "hello@dopres.ng", // placeholder until the client confirms
+  phone: "+234 810 753 7909",
+  instagram: { handle: "@dopres", href: "https://instagram.com/dopres" },
   address: ["12 Landmark Avenue", "Maitama, Abuja", "Nigeria"],
   nav: [
     { label: "About", href: "/#about" },
@@ -19,7 +20,7 @@ export const site = {
     { label: "Contact", href: "/#contact" },
   ],
   social: [
-    { label: "Instagram", href: "https://instagram.com" },
+    { label: "Instagram", href: "https://instagram.com/dopres" },
     { label: "LinkedIn", href: "https://linkedin.com" },
     { label: "X", href: "https://x.com" },
   ],

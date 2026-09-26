@@ -88,14 +88,24 @@ Services copy is at the top of `components/Services.tsx`; stats figures at the t
 All brand tokens are in the `@theme` block at the top of `app/globals.css`:
 
 ```css
---color-ink: #0a0a0a;      /* background */
---color-bone: #f2f0eb;     /* text */
---color-bronze: #b08d57;   /* accent */
+--color-navy: #0a1838;   /* brand blue: nav, stats band, CTA bands, footer, body text */
+--color-orange: #e2973f; /* brand orange: accents, hover fills, one CTA band */
+--color-paper: #f4f6fa;  /* off-white panel behind the team section */
 ```
 
-They are used as Tailwind classes (`bg-ink`, `text-bone`, `border-bronze`, `text-bone/60` …).
+They are used as Tailwind classes (`bg-navy`, `text-orange`, `border-navy/10`, `text-white/70` …). Labels, buttons
+and form fields take their colour from the surrounding text colour, so a section only needs `text-white` on a
+navy panel or `text-navy` on a white one. The logo lives in `public/logo-wordmark.png` (transparent, for navy
+surfaces only: it has a faint dark fringe on white) and `public/logo-mark.png` (the orange "o" used for the icons),
+both cut from the client's `Image 6.jpg` by keying out the navy background.
+
 Fonts are loaded in `app/layout.tsx` with `next/font`; swap `Cormorant_Garamond` / `Inter` for any Google font
 and keep the `--font-cormorant` / `--font-inter` variable names (or update them in `globals.css`).
+
+## Team
+
+`data/team.ts` holds the three architects. Add a `photo` path (drop portraits under `public/team/`) to replace
+the monogram placeholder; roles and bios there are placeholders awaiting the client.
 
 ## Contact form
 

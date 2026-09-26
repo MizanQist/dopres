@@ -17,7 +17,7 @@ export default function ProjectsPage() {
       <section className="px-6 pt-36 pb-24 md:px-10 md:pt-48 md:pb-32">
         <Reveal as="p" className="label mb-6">Portfolio</Reveal>
         <Reveal as="h1" className="font-serif text-[clamp(2.75rem,7vw,6.5rem)] font-light leading-[1.02]">Projects</Reveal>
-        <Reveal as="p" delay={0.1} className="mt-8 max-w-xl text-lg leading-relaxed text-bone/70">
+        <Reveal as="p" delay={0.1} className="mt-8 max-w-xl text-lg leading-relaxed text-navy/70">
           Residences, apartments, offices and a private terminal, each one seen through from land to landmark.
         </Reveal>
         <ul className="mt-20 grid gap-x-10 gap-y-20 md:grid-cols-2 md:mt-28">

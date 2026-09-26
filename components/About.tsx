@@ -11,7 +11,7 @@ export default function About() {
           </Reveal>
         </div>
         <div className="md:col-span-6 md:col-start-7 md:pt-20">
-          <Reveal as="p" lines className="text-lg leading-relaxed text-bone/70">
+          <Reveal as="p" lines className="text-lg leading-relaxed text-navy/70">
             DOPRES is a premium real-estate development company working across residential, commercial and
             hospitality assets. We take on a small number of projects at a time and see each one through from land
             to landmark: acquisition, design, construction and long-term management. Our work is defined by

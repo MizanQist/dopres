@@ -165,7 +165,7 @@ export default function ScrollVideoHero() {
   }, [mode]);
 
   return (
-    <section id="hero" ref={wrap} className="relative h-[200svh]">
+    <section id="hero" ref={wrap} className="relative h-[200svh] bg-navy text-white">
       <div ref={stage} className="relative h-svh w-full overflow-hidden">
         <Image src={HERO_POSTER} alt="" fill priority sizes="100vw" className="object-cover object-[43%_50%] md:object-center" />
         {mode !== "still" && (
@@ -180,13 +180,13 @@ export default function ScrollVideoHero() {
         )}
 
         {/* Soft bands only: one behind the nav, one so the outro and cue stay legible. */}
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-[28svh] bg-linear-to-b from-ink/70 to-transparent" />
-        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[45svh] bg-linear-to-t from-ink via-ink/55 to-transparent" />
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-[28svh] bg-linear-to-b from-navy/70 to-transparent" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[45svh] bg-linear-to-t from-navy via-navy/55 to-transparent" />
 
         {/* Centred lockup, faded out at 25–45% of the scroll. */}
         <div ref={lockup} className="absolute inset-0">
           <div ref={copy} data-hero="copy" className="absolute inset-x-6 top-1/2 flex -translate-y-1/2 flex-col items-center text-center md:inset-x-10">
-            <p className="label mb-8 text-bone/90">{site.name} · Premium real-estate development</p>
+            <p className="label mb-8 text-white/90">{site.name} · Premium real-estate development</p>
             <h1 className="font-serif text-[clamp(2.9rem,8vw,7.5rem)] font-light leading-[1.02] [text-shadow:0_2px_24px_rgba(0,0,0,0.45)]">
               Developing landmarks.
               <br />
@@ -197,16 +197,16 @@ export default function ScrollVideoHero() {
             </div>
           </div>
           <div data-hero="cue" className="absolute inset-x-0 bottom-10 flex flex-col items-center gap-5">
-            <span className="label text-bone/90">Scroll to explore</span>
-            <span className="block h-14 w-px overflow-hidden bg-bone/15">
-              <span className="cue-line block h-full w-full bg-bronze" />
+            <span className="label text-white/90">Scroll to explore</span>
+            <span className="block h-14 w-px overflow-hidden bg-white/20">
+              <span className="cue-line block h-full w-full bg-orange" />
             </span>
           </div>
         </div>
 
         {/* Outro, scrubbed in over the last 40%. */}
         <div ref={outro} data-hero="outro" className="absolute bottom-12 left-6 max-w-xl opacity-0 md:bottom-16 md:left-10">
-          <p className="label mb-5 text-bone/90">Selected work</p>
+          <p className="label mb-5 text-white/90">Selected work</p>
           <p className="font-serif text-3xl font-light leading-[1.1] md:text-5xl">
             Twelve landmarks across Abuja, Lagos, Kano and Port Harcourt.
           </p>
@@ -215,8 +215,8 @@ export default function ScrollVideoHero() {
         {mode === "loading" && (
           <div className="absolute right-6 top-24 hidden items-center gap-4 md:flex md:right-10" role="status" aria-live="polite">
             <span className="label">Loading film</span>
-            <span className="block h-px w-20 overflow-hidden bg-bone/15">
-              <span ref={bar} className="block h-full w-full origin-left scale-x-0 bg-bronze transition-transform duration-300" />
+            <span className="block h-px w-20 overflow-hidden bg-white/20">
+              <span ref={bar} className="block h-full w-full origin-left scale-x-0 bg-orange transition-transform duration-300" />
             </span>
           </div>
         )}

@@ -2,6 +2,7 @@ import dynamic from "next/dynamic";
 import ScrollVideoHero from "@/components/ScrollVideoHero";
 import About from "@/components/About";
 import CtaBand from "@/components/CtaBand";
+import Team from "@/components/Team";
 
 // Everything below the hero is split into its own chunk.
 const Stats = dynamic(() => import("@/components/Stats"));
@@ -18,7 +19,8 @@ export default function Home() {
       <Projects />
       <CtaBand eyebrow="Portfolio" title="Twelve projects, from private homes to a private terminal." href="/projects" label="View all projects" />
       <Services />
-      <CtaBand eyebrow="Work with us" title="Have a site, a brief or an idea? We would like to hear it." href="#contact" label="Start a conversation" />
+      <Team />
+      <CtaBand tone="orange" eyebrow="Work with us" title="Have a site, a brief or an idea? We would like to hear it." href="#contact" label="Start a conversation" />
       <Contact />
     </main>
   );

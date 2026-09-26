@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { site } from "@/data/site";
 
@@ -11,30 +12,34 @@ const ICONS: Record<string, string> = {
 
 export default function Footer() {
   return (
-    <footer className="border-t border-bone/10 px-6 pb-10 pt-20 md:px-10">
+    <footer className="bg-navy px-6 pb-10 pt-20 text-white md:px-10">
       <div className="grid gap-14 md:grid-cols-12">
         <div className="md:col-span-5">
-          <p className="font-serif text-5xl font-light tracking-[0.2em] md:text-6xl">{site.name}</p>
-          <p className="mt-6 max-w-sm text-bone/60">{site.tagline}</p>
+          <Image src="/logo-wordmark.png" alt={site.name} width={220} height={58} className="h-12 w-auto md:h-14" />
+          <p className="mt-6 max-w-sm text-white/60">{site.tagline}</p>
         </div>
         <div className="md:col-span-3">
           <p className="label mb-4">Navigate</p>
           <ul className="flex flex-col">
             {site.nav.map((l) => (
               <li key={l.href}>
-                <a href={l.href} className="tap link text-bone/80 transition-colors duration-500 hover:text-bone">{l.label}</a>
+                <a href={l.href} className="tap link text-white/80 transition-colors duration-500 hover:text-white">{l.label}</a>
               </li>
             ))}
             <li>
-              <Link href="/projects" className="tap link text-bone/80 transition-colors duration-500 hover:text-bone">All projects</Link>
+              <Link href="/projects" className="tap link text-white/80 transition-colors duration-500 hover:text-white">All projects</Link>
             </li>
           </ul>
         </div>
         <div className="md:col-span-4">
-          <p className="label mb-6">Office</p>
-          <address className="not-italic leading-relaxed text-bone/60">
+          <p className="label mb-6">Contact</p>
+          <address className="not-italic leading-relaxed text-white/60">
             {site.address.map((line) => <p key={line}>{line}</p>)}
-            <a href={`mailto:${site.email}`} className="tap link mt-2 text-bone/80">{site.email}</a>
+            <a href={`tel:${site.phone.replace(/\s/g, "")}`} className="tap link mt-2 text-white/80">{site.phone}</a>
+            <br />
+            <a href={`mailto:${site.email}`} className="tap link text-white/80">{site.email}</a>
+            <br />
+            <a href={site.instagram.href} target="_blank" rel="noreferrer" className="tap link text-white/80">{site.instagram.handle}</a>
           </address>
           <ul className="mt-6 -ml-3 flex">
             {site.social.map((s) => (
@@ -44,7 +49,7 @@ export default function Footer() {
                   target="_blank"
                   rel="noreferrer"
                   aria-label={s.label}
-                  className="flex h-11 w-11 items-center justify-center text-bone/50 transition-colors duration-500 hover:text-bronze"
+                  className="flex h-11 w-11 items-center justify-center text-white/60 transition-colors duration-500 hover:text-orange"
                 >
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden>
                     <path d={ICONS[s.label]} />
@@ -55,9 +60,9 @@ export default function Footer() {
           </ul>
         </div>
       </div>
-      <div className="mt-16 flex flex-wrap items-center justify-between gap-4 border-t border-bone/10 pt-6">
+      <div className="mt-16 flex flex-wrap items-center justify-between gap-4 border-t border-white/10 pt-6">
         <p className="label">© {new Date().getFullYear()} {site.name}. All rights reserved.</p>
-        <a href="#top" className="ui tap link px-2 text-bone/70 hover:text-bone">Back to top</a>
+        <a href="#top" className="ui tap link px-2 text-white/70 hover:text-white">Back to top</a>
       </div>
     </footer>
   );

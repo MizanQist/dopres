@@ -14,7 +14,7 @@ export default function ProjectCard({ project: p, index, className = "", sizes, 
       data-cursor="View"
       className={`group block ${className}`}
     >
-      <div className="relative aspect-[4/5] overflow-hidden bg-bone/5 md:aspect-[16/10]">
+      <div className="relative aspect-[4/5] overflow-hidden bg-navy/5 md:aspect-[16/10]">
         <Image
           src={cover.src}
           alt={cover.alt}
@@ -26,8 +26,8 @@ export default function ProjectCard({ project: p, index, className = "", sizes, 
       </div>
       <div className="mt-5 flex flex-col gap-3 md:flex-row md:items-start md:justify-between md:gap-6">
         <div>
-          <p className="label text-bronze">{String(index + 1).padStart(2, "0")} — {p.year}</p>
-          <h3 className="mt-3 font-serif text-3xl font-light leading-tight transition-colors duration-700 group-hover:text-bronze group-focus-visible:text-bronze md:text-4xl">
+          <p className="label text-orange">{String(index + 1).padStart(2, "0")} — {p.year}</p>
+          <h3 className="mt-3 font-serif text-3xl font-light leading-tight transition-colors duration-700 group-hover:text-orange group-focus-visible:text-orange md:text-4xl">
             {p.name}
           </h3>
           <p className="label mt-3">{p.location} · {p.type}</p>

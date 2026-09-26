@@ -39,8 +39,9 @@ export default function Cursor() {
       t.textContent = label;
       gsap.to(r, {
         scale: next === "label" ? 2.6 : next === "hover" ? 1.8 : 1,
-        backgroundColor: next === "label" ? "rgba(176,141,87,0.92)" : "rgba(176,141,87,0)",
-        borderColor: next ? "rgba(176,141,87,0.9)" : "rgba(242,240,235,0.4)",
+        backgroundColor: next === "label" ? "rgba(226,151,63,0.95)" : "rgba(226,151,63,0)",
+        borderColor: next ? "rgba(226,151,63,0.9)" : "rgba(255,255,255,0.7)",
+        mixBlendMode: next ? "normal" : "difference",
         duration: 0.7,
       });
       gsap.to(d, { scale: next ? 0 : 1, duration: 0.5 });
@@ -63,14 +64,14 @@ export default function Cursor() {
       <div
         ref={dot}
         aria-hidden
-        className="pointer-events-none fixed left-0 top-0 z-100 h-1.5 w-1.5 rounded-full bg-bone opacity-0 mix-blend-difference"
+        className="pointer-events-none fixed left-0 top-0 z-100 h-1.5 w-1.5 rounded-full bg-white opacity-0 mix-blend-difference"
       />
       <div
         ref={ring}
         aria-hidden
-        className="pointer-events-none fixed left-0 top-0 z-100 flex h-10 w-10 items-center justify-center rounded-full border border-bone/40 opacity-0"
+        className="pointer-events-none fixed left-0 top-0 z-100 flex h-10 w-10 items-center justify-center rounded-full border border-white/70 opacity-0 mix-blend-difference"
       >
-        <span ref={text} className="text-[4px] font-sans uppercase tracking-[0.2em] text-ink" />
+        <span ref={text} className="text-[4px] font-sans uppercase tracking-[0.2em] text-navy" />
       </div>
     </>
   );

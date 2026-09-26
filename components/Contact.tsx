@@ -57,7 +57,7 @@ export default function Contact() {
           <Reveal as="h2" lines className="font-serif text-[clamp(2.4rem,5vw,4.6rem)] font-light leading-[1.06]">
             Tell us about the site, the brief, or the idea.
           </Reveal>
-          <Reveal delay={0.2} className="mt-14 grid gap-10 text-bone/70 sm:grid-cols-2">
+          <Reveal delay={0.2} className="mt-14 grid gap-10 text-navy/70 sm:grid-cols-2">
             <address className="not-italic leading-relaxed">
               <p className="label mb-3">Office</p>
               {site.address.map((line) => <p key={line}>{line}</p>)}
@@ -67,6 +67,8 @@ export default function Contact() {
               <a href={`mailto:${site.email}`} className="tap link">{site.email}</a>
               <p className="label mt-6 mb-3">Phone</p>
               <a href={`tel:${site.phone.replace(/\s/g, "")}`} className="tap link">{site.phone}</a>
+              <p className="label mt-6 mb-3">Instagram</p>
+              <a href={site.instagram.href} target="_blank" rel="noreferrer" className="tap link">{site.instagram.handle}</a>
             </div>
           </Reveal>
         </div>
@@ -79,30 +81,30 @@ export default function Contact() {
               <input id="company" name="company" type="text" tabIndex={-1} autoComplete="off" />
             </div>
             {errorCount > 0 && (
-              <p role="alert" className="ui text-bronze">
+              <p role="alert" className="ui text-orange">
                 Please check the {errorCount === 1 ? "highlighted field" : `${errorCount} highlighted fields`}.
               </p>
             )}
             <div>
               <label htmlFor="name" className="label">Name</label>
               <input {...field("name")} type="text" autoComplete="name" placeholder="Your name" />
-              {errors.name && <p id="name-error" className="mt-2 text-sm text-bronze">{errors.name}</p>}
+              {errors.name && <p id="name-error" className="mt-2 text-sm text-orange">{errors.name}</p>}
             </div>
             <div>
               <label htmlFor="email" className="label">Email</label>
               <input {...field("email")} type="email" autoComplete="email" placeholder="you@company.com" />
-              {errors.email && <p id="email-error" className="mt-2 text-sm text-bronze">{errors.email}</p>}
+              {errors.email && <p id="email-error" className="mt-2 text-sm text-orange">{errors.email}</p>}
             </div>
             <div>
               <label htmlFor="message" className="label">Message</label>
               <textarea {...field("message")} rows={5} placeholder="A few lines about what you have in mind" />
-              {errors.message && <p id="message-error" className="mt-2 text-sm text-bronze">{errors.message}</p>}
+              {errors.message && <p id="message-error" className="mt-2 text-sm text-orange">{errors.message}</p>}
             </div>
             <div className="flex flex-wrap items-center justify-between gap-6">
               <button type="submit" disabled={status === "sending"} className="btn">
                 {status === "sending" ? "Sending…" : "Send message"}
               </button>
-              <p className="ui text-bronze" role="status" aria-live="polite">
+              <p className="ui text-orange" role="status" aria-live="polite">
                 {status === "sent" && "Thank you. We will be in touch shortly."}
                 {status === "error" && "Something went wrong. Please email us directly."}
               </p>
