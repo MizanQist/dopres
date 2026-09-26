@@ -110,17 +110,7 @@ export default function ScrollVideoHero() {
     target = current = st.progress;
     const end = v.duration - 0.05;
     let force = false;
-    const tick = () => {
-      current += (target - current) * LERP;
-      if (Math.abs(target - current) < 0.0005) current = target;
-      const t = Math.min(current * v.duration, end);
-      // No `seeking` gate: a seek that stalled while the tab was hidden would block every later one.
-      // While a seek is pending currentTime already reports the pending position, so this stays throttled.
-      if (force || Math.abs(v.currentTime - t) > HALF_FRAME) {
-        v.currentTime = force && v.currentTime === t ? t + 0.001 : t;
-        force = false;
-      }
-    };
+    let stalledSince = 0;
     // Browsers release the decoder of a paused video while the tab or app is in the background.
     // When we come back, prime it again (and reload it if the media was dropped) so seeks paint.
     const wake = () => {
@@ -128,6 +118,22 @@ export default function ScrollVideoHero() {
       const prime = () => v.play().then(() => v.pause()).catch(() => {}).finally(() => { force = true; });
       if (v.readyState === 0) { v.load(); once(v, "loadedmetadata", 15000).then(prime).catch(() => {}); }
       else prime();
+    };
+    const tick = () => {
+      current += (target - current) * LERP;
+      if (Math.abs(target - current) < 0.0005) current = target;
+      const t = Math.min(current * v.duration, end);
+      // Self-heal: a seek pending for over a second means the decoder went away; re-prime it.
+      if (v.seeking) {
+        stalledSince ||= performance.now();
+        if (performance.now() - stalledSince > 1000) { stalledSince = 0; wake(); }
+      } else stalledSince = 0;
+      // No `seeking` gate: a seek that stalled while the tab was hidden would block every later one.
+      // While a seek is pending currentTime already reports the pending position, so this stays throttled.
+      if (force || Math.abs(v.currentTime - t) > HALF_FRAME) {
+        v.currentTime = force && v.currentTime === t ? t + 0.001 : t;
+        force = false;
+      }
     };
     document.addEventListener("visibilitychange", wake);
     window.addEventListener("pageshow", wake);
